@@ -1,11 +1,13 @@
 ASM = nasm
-CC = i686-elf-gcc
 LD = i686-elf-ld
+CC = i686-elf-gcc
+CFLAGS = -g -ffreestanding -falign-jumps -falign-functions -falign-labels -falign-loops -fstrength-reduce -fomit-frame-pointer -finline-functions -fno-builtin -Werror -Wno-unused-function -Wno-unused-label -Wno-unused-parameter -Wno-cpp -nostdlib -nostartfiles -nodefaultlibs -Wall -O0 -Iinc 
 
 # IMG = /tmp/cell-os.img
 BOOT = ./bin/boot.bin
 KERNEL = ./bin/kernel.bin
-FILES = ./obj/kernel.s.o
+FILES = ./obj/kernel.s.o ./obj/kernel.o
+INCLUDES = -I./src
 
 .PHONY: clean setup
 
@@ -23,13 +25,15 @@ clean:
 	rm -rf ./bin/*
 	rm -rf ./obj/*
 
+$(BOOT): ./src/boot.asm 
+	$(ASM) -f bin ./src/boot.asm -o $(BOOT)
+
 $(KERNEL): $(FILES)
 	$(LD) -g -relocatable $(FILES) -o ./obj/kernel-full.o
-	$(CC) -T ./src/linker.ld -o ./bin/kernel.bin -ffreestanding -O0 -nostdlib ./obj/kernel-full.o
+	$(CC) $(CFLAGS) -T ./src/linker.ld -o ./bin/kernel.bin ./obj/kernel-full.o 
 
-$(BOOT): ./src/boot.asm 
-	$(ASM) -f bin ./src/boot.asm -o $(BOOT) 
+./obj/kernel.s.o: ./src/kernel.asm
+	$(ASM) -f elf -g ./src/kernel.asm -o ./obj/kernel.s.o
 
-$(FILES): ./src/kernel.asm
-	$(ASM) -f elf -g ./src/kernel.asm -o $(FILES)
-
+./obj/kernel.o: ./src/kernel.c
+	$(CC) $(INCLUDES) $(CFLAGS) -std=gnu99 -c ./src/kernel.c -o ./obj/kernel.o 
