@@ -6,7 +6,7 @@ CFLAGS = -g -ffreestanding -falign-jumps -falign-functions -falign-labels -falig
 # IMG = /tmp/cell-os.img
 BOOT = ./bin/boot.bin
 KERNEL = ./bin/kernel.bin
-FILES = ./obj/kernel.s.o ./obj/kernel.o
+FILES = ./obj/kernel.s.o ./obj/kernel.o ./obj/std/print.o
 INCLUDES = -I./src
 
 .PHONY: clean setup
@@ -23,7 +23,7 @@ setup:
 
 clean:
 	rm -rf ./bin/*
-	rm -rf ./obj/*
+	rm -rf $(FILES)
 
 $(BOOT): ./src/boot.asm 
 	$(ASM) -f bin ./src/boot.asm -o $(BOOT)
@@ -35,5 +35,9 @@ $(KERNEL): $(FILES)
 ./obj/kernel.s.o: ./src/kernel.asm
 	$(ASM) -f elf -g ./src/kernel.asm -o ./obj/kernel.s.o
 
-./obj/kernel.o: ./src/kernel.c
+./obj/kernel.o: ./src/kernel.c ./src/std/print.c 
 	$(CC) $(INCLUDES) $(CFLAGS) -std=gnu99 -c ./src/kernel.c -o ./obj/kernel.o 
+
+./obj/std/print.o: ./src/std/print.c
+	$(CC) $(INCLUDES) $(CFLAGS) -I./src/std -std=gnu99 -c ./src/std/print.c -o ./obj/std/print.o 
+
