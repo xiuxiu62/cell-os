@@ -1,5 +1,6 @@
 #include "idt.h"
 #include "../config.h"
+#include "../std/io.h"
 #include "../std/memory.h"
 #include "../std/print.h"
 
@@ -8,7 +9,17 @@ struct idtr_desc idtr_descriptor;
 
 extern void idt_load(struct idtr_desc *ptr);
 
-void idt_zero() { print("Divided by zero\n"); }
+extern void no_interrupt();
+extern void int21h();
+
+void no_interrupt_handler() { outb(0x20, 0x20); }
+
+void int0h() { println("Divided by zero"); }
+
+void int21h_handler() {
+  println("Keyboard pressed");
+  outb(0x20, 0x20);
+}
 
 void idt_set(int interrupt_no, void *address) {
   struct idt_desc *desc = &idt_descriptors[interrupt_no];
@@ -24,6 +35,11 @@ void idt_init() {
   idtr_descriptor.limit = sizeof(idt_descriptors) - 1;
   idtr_descriptor.base = (uint32_t)idt_descriptors;
 
-  idt_set(0, idt_zero);
+  for (int i = 0; i < CELLOS_TOTAL_INTERUPTS; i++)
+    idt_set(i, no_interrupt);
+
+  idt_set(0x0, int0h);
+  idt_set(0x21, int21h);
+
   idt_load(&idtr_descriptor);
 }

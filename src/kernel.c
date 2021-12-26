@@ -9,6 +9,4 @@ void kernel_main() {
 
   println("Hello world");
   println("This should be on a new line");
-
-  outb(0x60, 0xff);
 }

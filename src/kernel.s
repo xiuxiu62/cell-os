@@ -23,7 +23,18 @@ enable_a20:
     or al, 2
     out 0x92, al
 
+remap_master_pic:
+    mov al, 0x11
+    out 0x20, al
+
+    mov al, 0x20 ; Master ISR start
+    out 0x21, al
+
+    mov al, 0x01
+    out 0x21, al
+
 kernel_start:
+    sti
     call kernel_main
     jmp $
 
