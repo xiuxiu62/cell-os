@@ -7,9 +7,9 @@
 void terminal_initialize();
 void kernel_main();
 
-void print(const char*str);
-void println(const char*str);
-void print_color(const char*str, char color);
-void println_color(const char*str, char color);
+void print(const char *str);
+void println(const char *str);
+void print_color(const char *str, char color);
+void println_color(const char *str, char color);
 
 #endif

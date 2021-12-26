@@ -6,7 +6,7 @@ CFLAGS = -g -ffreestanding -falign-jumps -falign-functions -falign-labels -falig
 # IMG = /tmp/cell-os.img
 BOOT = ./bin/boot.bin
 KERNEL = ./bin/kernel.bin
-FILES = ./obj/kernel.s.o ./obj/kernel.o ./obj/idt/idt.s.o ./obj/idt/idt.o ./obj/std/print.o ./obj/std/memory.o  
+FILES = ./obj/kernel.s.o ./obj/kernel.o ./obj/idt/idt.s.o ./obj/idt/idt.o ./obj/std/print.o ./obj/std/memory.o ./obj/std/io.s.o
 INCLUDES = -I./src
 
 .PHONY: clean setup
@@ -50,3 +50,6 @@ $(KERNEL): $(FILES)
 
 ./obj/std/memory.o: ./src/std/memory.c
 	$(CC) $(INCLUDES) $(CFLAGS) -I./src/std -std=gnu99 -c ./src/std/memory.c -o ./obj/std/memory.o 
+
+./obj/std/io.s.o: ./src/std/io.s
+	$(ASM) -f elf -g ./src/std/io.s -o ./obj/std/io.s.o
