@@ -1,4 +1,5 @@
 #include "kernel.h"
+#include "idt/idt.h"
 #include "std/print.h"
 
 void kernel_main() {

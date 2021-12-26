@@ -16,4 +16,6 @@ struct idtr_desc {
   uint32_t base;  // Base address of the table
 } __attribute__((packed));
 
+void idt_init();
+
 #endif

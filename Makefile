@@ -6,7 +6,7 @@ CFLAGS = -g -ffreestanding -falign-jumps -falign-functions -falign-labels -falig
 # IMG = /tmp/cell-os.img
 BOOT = ./bin/boot.bin
 KERNEL = ./bin/kernel.bin
-FILES = ./obj/kernel.s.o ./obj/kernel.o ./obj/std/print.o
+FILES = ./obj/kernel.s.o ./obj/kernel.o ./obj/idt/idt.s.o ./obj/idt/idt.o ./obj/std/print.o ./obj/std/memory.o  
 INCLUDES = -I./src
 
 .PHONY: clean setup
@@ -24,20 +24,29 @@ setup:
 clean:
 	rm -rf ./bin/*
 	rm -rf $(FILES)
+	rm -rf ./obj/kernel-full.o
 
-$(BOOT): ./src/boot.asm 
-	$(ASM) -f bin ./src/boot.asm -o $(BOOT)
+$(BOOT): ./src/boot.s 
+	$(ASM) -f bin ./src/boot.s -o $(BOOT)
 
 $(KERNEL): $(FILES)
 	$(LD) -g -relocatable $(FILES) -o ./obj/kernel-full.o
 	$(CC) $(CFLAGS) -T ./src/linker.ld -o ./bin/kernel.bin ./obj/kernel-full.o 
 
-./obj/kernel.s.o: ./src/kernel.asm
-	$(ASM) -f elf -g ./src/kernel.asm -o ./obj/kernel.s.o
+./obj/kernel.s.o: ./src/kernel.s
+	$(ASM) -f elf -g ./src/kernel.s -o ./obj/kernel.s.o
 
 ./obj/kernel.o: ./src/kernel.c ./src/std/print.c 
 	$(CC) $(INCLUDES) $(CFLAGS) -std=gnu99 -c ./src/kernel.c -o ./obj/kernel.o 
 
+./obj/idt/idt.s.o: ./src/idt/idt.s
+	$(ASM) -f elf -g ./src/idt/idt.s -o ./obj/idt/idt.s.o
+
+./obj/idt/idt.o: ./src/idt/idt.c
+	$(CC) $(INCLUDES) $(CFLAGS) -I./src/idt -std=gnu99 -c ./src/idt/idt.c -o ./obj/idt/idt.o 
+
 ./obj/std/print.o: ./src/std/print.c
 	$(CC) $(INCLUDES) $(CFLAGS) -I./src/std -std=gnu99 -c ./src/std/print.c -o ./obj/std/print.o 
 
+./obj/std/memory.o: ./src/std/memory.c
+	$(CC) $(INCLUDES) $(CFLAGS) -I./src/std -std=gnu99 -c ./src/std/memory.c -o ./obj/std/memory.o 

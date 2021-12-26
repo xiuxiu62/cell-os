@@ -15,7 +15,7 @@ void terminal_putchar(int x, int y, char c, char color) {
   video_mem[(y * VGA_WIDTH) + x] = terminal_make_char(c, color);
 }
 
-void terminal_put_newline() {
+static inline void terminal_put_newline() {
   terminal_col = 0;
   terminal_row += 1;
 }
