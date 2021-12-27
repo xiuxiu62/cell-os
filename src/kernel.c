@@ -1,6 +1,7 @@
 #include "kernel.h"
 #include "idt/idt.h"
 #include "std/io.h"
+#include "std/mem/conv.h"
 #include "std/mem/kheap.h"
 #include "std/mem/paging.h"
 #include "std/print.h"
@@ -31,6 +32,12 @@ void kernel_init() {
   paging_switch(directory);
   println("Kernel paging: [ok]");
 
+  char *ptr = kzalloc(KB(4));
+  uint32_t *chunk_directory = paging_chunk_get_directory(kernel_chunk);
+  uint32_t entry_val = ((uint32_t)ptr | PAGING_ACCESS_FROM_ALL |
+                        PAGING_IS_PRESENT | PAGING_IS_WRITABLE);
+  paging_set(chunk_directory, (void *)0x1000, entry_val);
+
   // Enable paging
   enable_paging();
   println("Enable paging: [ok]");
@@ -45,11 +52,9 @@ void kernel_init() {
 void kernel_main() {
   kernel_init();
 
-  println("Hello world :)");
-
   void *ptr = kmalloc(50);
-  void *ptr_2 = kmalloc(1000);
+  ptr = "Hello world :)";
 
+  println(ptr);
   kfree(ptr);
-  kfree(ptr_2);
 }
