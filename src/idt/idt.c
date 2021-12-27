@@ -9,9 +9,13 @@ struct idtr_desc idtr_descriptor;
 
 extern void idt_load(struct idtr_desc *ptr);
 
+extern void enable_interrupts();
+extern void disable_interrupts();
+
 extern void no_interrupt();
-void int0h() { println("Divided by zero"); }
 extern void int21h();
+
+void int0h() { println("Divided by zero"); }
 
 void no_interrupt_handler() { outb(0x20, 0x20); }
 
@@ -41,4 +45,5 @@ void idt_init() {
   idt_set(0x21, int21h);
 
   idt_load(&idtr_descriptor);
+  enable_interrupts();
 }
