@@ -19,6 +19,7 @@ struct paging_chunk {
 };
 
 struct paging_chunk *create_paging_chunk(uint8_t flags);
+uint32_t *paging_chunk_get_directory(struct paging_chunk *chunk);
 void paging_switch(uint32_t *directory);
 void enable_paging();
 

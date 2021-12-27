@@ -26,6 +26,15 @@ void kernel_init() {
   kernel_chunk = create_paging_chunk(paging_flags);
   println("Initialize paging: [ok]");
 
+  // Switch to kernel paging
+  uint32_t *directory = paging_chunk_get_directory(kernel_chunk);
+  paging_switch(directory);
+  println("Kernel paging: [ok]");
+
+  // Enable paging
+  enable_paging();
+  println("Enable paging: [ok]");
+
   // Enable Interrupts
   enable_interrupts();
   println("Enable interrupts: [ok]");
@@ -36,7 +45,7 @@ void kernel_init() {
 void kernel_main() {
   kernel_init();
 
-  println("Hello world");
+  println("Hello world :)");
 
   void *ptr = kmalloc(50);
   void *ptr_2 = kmalloc(1000);
