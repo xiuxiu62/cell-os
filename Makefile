@@ -7,7 +7,7 @@ CFLAGS = -g -ffreestanding -falign-jumps -falign-functions -falign-labels -falig
 BOOT = ./bin/boot.bin
 KERNEL = ./bin/kernel.bin
 DIRS = ./bin ./obj ./obj/idt ./obj/std ./obj/std/mem
-FILES = ./obj/kernel.s.o ./obj/kernel.o ./obj/idt/idt.s.o ./obj/idt/idt.o ./obj/std/print.o ./obj/std/mem/memory.o ./obj/std/mem/heap.o ./obj/std/mem/kheap.o ./obj/std/io.s.o
+FILES = ./obj/kernel.s.o ./obj/kernel.o ./obj/idt/idt.s.o ./obj/idt/idt.o ./obj/std/print.o ./obj/std/mem/memory.o ./obj/std/mem/heap.o ./obj/std/mem/kheap.o ./obj/std/mem/paging.s.o ./obj/std/mem/paging.o ./obj/std/io.s.o
 INCLUDES = -I./src
 
 .PHONY: clean setup
@@ -19,7 +19,7 @@ all: $(BOOT) $(KERNEL)
 	dd if=/dev/zero bs=512 count=100 >> ./bin/os.bin
 
 .ONESHELL:
-configure:
+init:
 	@set -eu
 	for dir in $(DIRS); do         
 		if [[ ! -d $$dir ]]; then  
@@ -88,3 +88,9 @@ $(KERNEL): $(FILES)
 
 ./obj/std/mem/kheap.o: ./src/std/mem/kheap.c 
 	$(CC) $(INCLUDES) $(CFLAGS) -I./src/std/mem -std=gnu99 -c ./src/std/mem/kheap.c -o ./obj/std/mem/kheap.o 
+
+./obj/std/mem/paging.s.o: ./src/std/mem/paging.s
+	$(ASM) -f elf -g ./src/std/mem/paging.s -o ./obj/std/mem/paging.s.o
+
+./obj/std/mem/paging.o: ./src/std/mem/paging.c 
+	$(CC) $(INCLUDES) $(CFLAGS) -I./src/std/mem -std=gnu99 -c ./src/std/mem/paging.c -o ./obj/std/mem/paging.o 

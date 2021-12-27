@@ -45,5 +45,4 @@ void idt_init() {
   idt_set(0x21, int21h);
 
   idt_load(&idtr_descriptor);
-  enable_interrupts();
 }
