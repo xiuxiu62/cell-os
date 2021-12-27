@@ -51,24 +51,28 @@ size_t strlen(const char *str) {
 }
 
 void print(const char *str) {
-  for (int i = 0; i < strlen(str); i++)
+  size_t len = strlen(str);
+  for (int i = 0; i < len; i++)
     terminal_writechar(str[i], White);
 }
 
 void println(const char *str) {
-  for (int i = 0; i < strlen(str); i++)
+  size_t len = strlen(str);
+  for (int i = 0; i < len; i++)
     terminal_writechar(str[i], White);
 
   terminal_writechar('\n', White);
 }
 
 void print_color(const char *str, enum Color color) {
-  for (int i = 0; i < strlen(str); i++)
+  size_t len = strlen(str);
+  for (int i = 0; i < len; i++)
     terminal_writechar(str[i], color);
 }
 
 void println_color(const char *str, enum Color color) {
-  for (int i = 0; i < strlen(str); i++)
+  size_t len = strlen(str);
+  for (int i = 0; i < len; i++)
     terminal_writechar(str[i], color);
 
   terminal_writechar('\n', color);
