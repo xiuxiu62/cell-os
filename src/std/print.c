@@ -3,15 +3,15 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#define BLACK 15
-
 uint16_t *video_mem = 0;
 uint16_t terminal_row = 0;
 uint16_t terminal_col = 0;
 
-uint16_t terminal_make_char(char c, char color) { return (color << 8) | c; }
+uint16_t terminal_make_char(char c, enum Color color) {
+  return (color << 8) | c;
+}
 
-void terminal_putchar(int x, int y, char c, char color) {
+void terminal_putchar(int x, int y, char c, enum Color color) {
   video_mem[(y * VGA_WIDTH) + x] = terminal_make_char(c, color);
 }
 
@@ -20,7 +20,7 @@ static inline void terminal_put_newline() {
   terminal_row += 1;
 }
 
-void terminal_writechar(char c, char color) {
+void terminal_writechar(char c, enum Color color) {
   if (c == '\n') {
     terminal_put_newline();
     return;
@@ -52,22 +52,22 @@ size_t strlen(const char *str) {
 
 void print(const char *str) {
   for (int i = 0; i < strlen(str); i++)
-    terminal_writechar(str[i], BLACK);
+    terminal_writechar(str[i], White);
 }
 
 void println(const char *str) {
   for (int i = 0; i < strlen(str); i++)
-    terminal_writechar(str[i], BLACK);
+    terminal_writechar(str[i], White);
 
-  terminal_writechar('\n', BLACK);
+  terminal_writechar('\n', White);
 }
 
-void print_color(const char *str, char color) {
+void print_color(const char *str, enum Color color) {
   for (int i = 0; i < strlen(str); i++)
     terminal_writechar(str[i], color);
 }
 
-void println_color(const char *str, char color) {
+void println_color(const char *str, enum Color color) {
   for (int i = 0; i < strlen(str); i++)
     terminal_writechar(str[i], color);
 
