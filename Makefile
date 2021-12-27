@@ -39,7 +39,12 @@ build:
 
 run:
 	@[[ ! -f "./bin/os.bin" ]] && make build 
-	qemu-system-x86_64 -hda ./bin/os.bin
+	qemu-system-i386 -hda ./bin/os.bin
+
+debug:
+	@[[ ! -f "./bin/os.bin" ]] && make build 
+	gdb --ex "target remote | qemu-system-i386 -hda ./bin/os.bin -S -gdb stdio" \
+		--ex "add-symbol-file ./obj/kernel-full.o"
 
 build_run:
 	make build 
