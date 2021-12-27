@@ -1,5 +1,5 @@
 #include "kheap.h"
-#include "../../config.h"
+#include "../config.h"
 #include "../print.h"
 #include "heap.h"
 #include "memory.h"

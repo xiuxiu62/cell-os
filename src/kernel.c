@@ -1,10 +1,10 @@
 #include "kernel.h"
 #include "idt/idt.h"
-#include "std/io.h"
-#include "std/mem/conv.h"
-#include "std/mem/kheap.h"
-#include "std/mem/paging.h"
-#include "std/print.h"
+#include "io/io.h"
+#include "mem/conv.h"
+#include "mem/kheap.h"
+#include "mem/paging.h"
+#include "print.h"
 
 static struct paging_chunk *kernel_chunk = 0;
 
@@ -32,6 +32,7 @@ void kernel_init() {
   paging_switch(directory);
   println("Kernel paging: [ok]");
 
+  // Map a pointer to (virtual addr) 0x1000
   char *ptr = kzalloc(KB(4));
   uint32_t *chunk_directory = paging_chunk_get_directory(kernel_chunk);
   uint32_t entry_val = ((uint32_t)ptr | PAGING_ACCESS_FROM_ALL |

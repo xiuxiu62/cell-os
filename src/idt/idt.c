@@ -1,8 +1,8 @@
 #include "idt.h"
 #include "../config.h"
-#include "../std/io.h"
-#include "../std/mem/memory.h"
-#include "../std/print.h"
+#include "../io/io.h"
+#include "../mem/memory.h"
+#include "../print.h"
 
 struct idt_desc idt_descriptors[CELLOS_TOTAL_INTERUPTS];
 struct idtr_desc idtr_descriptor;

@@ -1,5 +1,5 @@
 #include "paging.h"
-#include "../../status.h"
+#include "../status.h"
 #include "kheap.h"
 
 static uint32_t *current_directory = 0;

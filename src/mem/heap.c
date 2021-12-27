@@ -1,7 +1,7 @@
 #include "heap.h"
-#include "../../config.h"
-#include "../../kernel.h"
-#include "../../status.h"
+#include "../config.h"
+#include "../kernel.h"
+#include "../status.h"
 #include "memory.h"
 #include <stdbool.h>
 

@@ -34,11 +34,15 @@ void terminal_writechar(char c, enum Color color) {
   }
 }
 
-void terminal_init() {
-  video_mem = (uint16_t *)(0xb8000);
+void terminal_clear() {
   for (int y = 0; y < VGA_HEIGHT; y++)
     for (int x = 0; x < VGA_WIDTH; x++)
       terminal_putchar(x, y, ' ', 0);
+}
+
+void terminal_init() {
+  video_mem = (uint16_t *)(0xb8000);
+  terminal_clear();
 }
 
 size_t strlen(const char *str) {
