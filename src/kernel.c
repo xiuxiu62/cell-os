@@ -5,6 +5,7 @@
 #include "mem/kheap.h"
 #include "mem/paging.h"
 #include "print.h"
+#include "storage/disk.h"
 
 static struct paging_chunk *kernel_chunk = 0;
 
@@ -32,13 +33,6 @@ void kernel_init() {
   paging_switch(directory);
   println("Kernel paging: [ok]");
 
-  // Map a pointer to (virtual addr) 0x1000
-  char *ptr = kzalloc(KB(4));
-  uint32_t *chunk_directory = paging_chunk_get_directory(kernel_chunk);
-  uint32_t entry_val = ((uint32_t)ptr | PAGING_ACCESS_FROM_ALL |
-                        PAGING_IS_PRESENT | PAGING_IS_WRITABLE);
-  paging_set(chunk_directory, (void *)0x1000, entry_val);
-
   // Enable paging
   enable_paging();
   println("Enable paging: [ok]");
@@ -53,9 +47,11 @@ void kernel_init() {
 void kernel_main() {
   kernel_init();
 
-  void *ptr = kmalloc(50);
-  ptr = "Hello world :)";
+  char *buf = kmalloc(512);
+  disk_read_sector(0, 1, buf);
+  for (int i = 0; i < 512; i++)
+    buf[i] = (unsigned char)(buf[i]);
 
-  println(ptr);
-  kfree(ptr);
+  println(buf);
+  kfree(buf);
 }

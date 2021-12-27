@@ -6,8 +6,8 @@ CFLAGS = -g -ffreestanding -falign-jumps -falign-functions -falign-labels -falig
 # IMG = /tmp/cell-os.img
 BOOT = ./bin/boot.bin
 KERNEL = ./bin/kernel.bin
-DIRS = ./bin ./obj ./obj/idt ./obj/io ./obj/mem
-FILES = ./obj/kernel.s.o ./obj/kernel.o ./obj/idt/idt.s.o ./obj/idt/idt.o ./obj/print.o ./obj/mem/memory.o ./obj/mem/heap.o ./obj/mem/kheap.o ./obj/mem/paging.s.o ./obj/mem/paging.o ./obj/io/io.s.o
+DIRS = ./bin ./obj ./obj/idt ./obj/io ./obj/mem ./obj/storage
+FILES = ./obj/kernel.s.o ./obj/kernel.o ./obj/print.o ./obj/idt/idt.s.o ./obj/idt/idt.o ./obj/io/io.s.o ./obj/mem/memory.o ./obj/mem/heap.o ./obj/mem/kheap.o ./obj/mem/paging.s.o ./obj/mem/paging.o ./obj/storage/disk.o 
 INCLUDES = -I./src
 
 .PHONY: clean setup
@@ -43,8 +43,9 @@ run:
 
 debug:
 	@[[ ! -f "./bin/os.bin" ]] && make build 
-	gdb --ex "target remote | qemu-system-i386 -hda ./bin/os.bin -S -gdb stdio" \
-		--ex "add-symbol-file ./obj/kernel-full.o"
+	gdb --ex "add-symbol-file ./obj/kernel-full.o" \
+		--ex "break kernel.c:51" \
+		--ex "target remote | qemu-system-i386 -hda ./bin/os.bin -S -gdb stdio"
 
 build_run:
 	make build 
@@ -94,3 +95,6 @@ $(KERNEL): $(FILES)
 
 ./obj/mem/paging.o: ./src/mem/paging.c 
 	$(CC) $(INCLUDES) $(CFLAGS) -I./src/mem -std=gnu99 -c ./src/mem/paging.c -o ./obj/mem/paging.o 
+
+./obj/storage/disk.o: ./src/storage/disk.c
+	$(CC) $(INCLUDES) $(CFLAGS) -I./src/storage -std=gnu99 -c ./src/storage/disk.c -o ./obj/storage/disk.o 
