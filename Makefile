@@ -7,7 +7,7 @@ CFLAGS = -g -ffreestanding -falign-jumps -falign-functions -falign-labels -falig
 BOOT = ./bin/boot.bin
 KERNEL = ./bin/kernel.bin
 DIRS = ./bin ./obj ./obj/idt ./obj/std ./obj/std/mem
-FILES = ./obj/kernel.s.o ./obj/kernel.o ./obj/idt/idt.s.o ./obj/idt/idt.o ./obj/std/print.o ./obj/std/mem/memory.o ./obj/std/mem/heap.o ./obj/std/io.s.o
+FILES = ./obj/kernel.s.o ./obj/kernel.o ./obj/idt/idt.s.o ./obj/idt/idt.o ./obj/std/print.o ./obj/std/mem/memory.o ./obj/std/mem/heap.o ./obj/std/mem/kheap.o ./obj/std/io.s.o
 INCLUDES = -I./src
 
 .PHONY: clean setup
@@ -72,11 +72,14 @@ $(KERNEL): $(FILES)
 ./obj/std/print.o: ./src/std/print.c
 	$(CC) $(INCLUDES) $(CFLAGS) -I./src/std -std=gnu99 -c ./src/std/print.c -o ./obj/std/print.o 
 
-./obj/std/mem/memory.o: ./src/std/mem/memory.c
-	$(CC) $(INCLUDES) $(CFLAGS) -I./src/std -std=gnu99 -c ./src/std/mem/memory.c -o ./obj/std/mem/memory.o 
-
-./obj/std/mem/heap.o: ./src/std/mem/heap.c 
-	$(CC) $(INCLUDES) $(CFLAGS) -I./src/std -std=gnu99 -c ./src/std/mem/heap.c -o ./obj/std/mem/heap.o 
-
 ./obj/std/io.s.o: ./src/std/io.s
 	$(ASM) -f elf -g ./src/std/io.s -o ./obj/std/io.s.o
+
+./obj/std/mem/memory.o: ./src/std/mem/memory.c
+	$(CC) $(INCLUDES) $(CFLAGS) -I./src/std/mem -std=gnu99 -c ./src/std/mem/memory.c -o ./obj/std/mem/memory.o 
+
+./obj/std/mem/heap.o: ./src/std/mem/heap.c 
+	$(CC) $(INCLUDES) $(CFLAGS) -I./src/std/mem -std=gnu99 -c ./src/std/mem/heap.c -o ./obj/std/mem/heap.o 
+
+./obj/std/mem/kheap.o: ./src/std/mem/kheap.c 
+	$(CC) $(INCLUDES) $(CFLAGS) -I./src/std/mem -std=gnu99 -c ./src/std/mem/kheap.c -o ./obj/std/mem/kheap.o 

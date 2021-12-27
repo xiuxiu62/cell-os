@@ -34,7 +34,7 @@ void terminal_writechar(char c, char color) {
   }
 }
 
-void terminal_initialize() {
+void terminal_init() {
   video_mem = (uint16_t *)(0xb8000);
   for (int y = 0; y < VGA_HEIGHT; y++)
     for (int x = 0; x < VGA_WIDTH; x++)
