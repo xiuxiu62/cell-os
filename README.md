@@ -1,6 +1,9 @@
+## configure 
+`make configure`
+
 ## build
-`./scripts/build.sh`
+`make build`
 
 ## run
-`qemu-system-x86_64 -hda ./bin/os.bin`
+`make run`
 

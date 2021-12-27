@@ -1,7 +1,7 @@
 #include "idt.h"
 #include "../config.h"
 #include "../std/io.h"
-#include "../std/memory.h"
+#include "../std/mem/memory.h"
 #include "../std/print.h"
 
 struct idt_desc idt_descriptors[CELLOS_TOTAL_INTERUPTS];
@@ -10,11 +10,10 @@ struct idtr_desc idtr_descriptor;
 extern void idt_load(struct idtr_desc *ptr);
 
 extern void no_interrupt();
+void int0h() { println("Divided by zero"); }
 extern void int21h();
 
 void no_interrupt_handler() { outb(0x20, 0x20); }
-
-void int0h() { println("Divided by zero"); }
 
 void int21h_handler() {
   println("Keyboard pressed");

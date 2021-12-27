@@ -6,7 +6,8 @@ CFLAGS = -g -ffreestanding -falign-jumps -falign-functions -falign-labels -falig
 # IMG = /tmp/cell-os.img
 BOOT = ./bin/boot.bin
 KERNEL = ./bin/kernel.bin
-FILES = ./obj/kernel.s.o ./obj/kernel.o ./obj/idt/idt.s.o ./obj/idt/idt.o ./obj/std/print.o ./obj/std/memory.o ./obj/std/io.s.o
+DIRS = ./bin ./obj ./obj/idt ./obj/std ./obj/std/mem
+FILES = ./obj/kernel.s.o ./obj/kernel.o ./obj/idt/idt.s.o ./obj/idt/idt.o ./obj/std/print.o ./obj/std/mem/memory.o ./obj/std/mem/heap.o ./obj/std/io.s.o
 INCLUDES = -I./src
 
 .PHONY: clean setup
@@ -17,9 +18,32 @@ all: $(BOOT) $(KERNEL)
 	dd if=./bin/kernel.bin >> ./bin/os.bin
 	dd if=/dev/zero bs=512 count=100 >> ./bin/os.bin
 
-setup:
-	@if [[ ! -d "./bin" ]]; then mkdir bin; fi
-	@if [[ ! -d "./obj" ]]; then mkdir obj; fi
+.ONESHELL:
+configure:
+	@set -eu
+	for dir in $(DIRS); do         
+		if [[ ! -d $$dir ]]; then  
+			echo "Creating $$dir"
+			mkdir $$dir 
+			touch $$dir/.keep  
+		fi                  
+	done
+
+build:
+	export PREFIX="$$HOME/opt/cross"
+	export TARGET=i686-elf
+	export PATH="$$PREFIX/bin:$$PATH"
+	make clean
+	make setup
+	make all
+
+run:
+	@[[ ! -f "./bin/os.bin" ]] && make build 
+	qemu-system-x86_64 -hda ./bin/os.bin
+
+build_run:
+	make build 
+	make run
 
 clean:
 	rm -rf ./bin/*
@@ -48,8 +72,11 @@ $(KERNEL): $(FILES)
 ./obj/std/print.o: ./src/std/print.c
 	$(CC) $(INCLUDES) $(CFLAGS) -I./src/std -std=gnu99 -c ./src/std/print.c -o ./obj/std/print.o 
 
-./obj/std/memory.o: ./src/std/memory.c
-	$(CC) $(INCLUDES) $(CFLAGS) -I./src/std -std=gnu99 -c ./src/std/memory.c -o ./obj/std/memory.o 
+./obj/std/mem/memory.o: ./src/std/mem/memory.c
+	$(CC) $(INCLUDES) $(CFLAGS) -I./src/std -std=gnu99 -c ./src/std/mem/memory.c -o ./obj/std/mem/memory.o 
+
+./obj/std/mem/heap.o: ./src/std/mem/heap.c 
+	$(CC) $(INCLUDES) $(CFLAGS) -I./src/std -std=gnu99 -c ./src/std/mem/heap.c -o ./obj/std/mem/heap.o 
 
 ./obj/std/io.s.o: ./src/std/io.s
 	$(ASM) -f elf -g ./src/std/io.s -o ./obj/std/io.s.o
