@@ -1,4 +1,5 @@
 #include "print.h"
+#include "string/str.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -43,15 +44,6 @@ void terminal_clear() {
 void terminal_init() {
   video_mem = (uint16_t *)(0xb8000);
   terminal_clear();
-}
-
-size_t strlen(const char *str) {
-  size_t len = 0;
-  while (str[len]) {
-    len++;
-  }
-
-  return len;
 }
 
 void print(const char *str) {

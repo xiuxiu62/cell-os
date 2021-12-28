@@ -1,6 +1,24 @@
 #include "disk.h"
+#include "../config.h"
 #include "../io/io.h"
+#include "../mem/memory.h"
 #include "../status.h"
+
+struct disk disk;
+
+void disk_search_init() {
+  memset(&disk, 0, sizeof(disk));
+  disk.type = CELLOS_DISK_TYPE_REAL;
+  disk.sector_size = CELLOS_SECTOR_SIZE;
+};
+
+struct disk *disk_get(int index) {
+  // Temporary static return for non-main disk
+  if (index != CELLOS_DISK_TYPE_REAL)
+    return 0;
+
+  return &disk;
+}
 
 int disk_read_sector(int lba, int total, void *buf) {
   // Prepare disk read
@@ -18,9 +36,19 @@ int disk_read_sector(int lba, int total, void *buf) {
     while (!(c & 0x08))
       c = insb(0x1f7);
 
-    for (int i = 0; i < 256; i++)
-      *ptr++ = insw(0x1f0);
+    for (int i = 0; i < 256; i++) {
+      *ptr = insw(0x1f0);
+      ptr++;
+    }
   }
 
   return OK;
+}
+
+int disk_read_block(struct disk *idisk, unsigned int lba, int total,
+                    void *buf) {
+  if (idisk != CELLOS_DISK_TYPE_REAL)
+    return -EIO;
+
+  return disk_read_sector(lba, total, buf);
 }

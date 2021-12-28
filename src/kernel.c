@@ -1,4 +1,5 @@
 #include "kernel.h"
+#include "config.h"
 #include "idt/idt.h"
 #include "io/io.h"
 #include "mem/conv.h"
@@ -17,6 +18,9 @@ void kernel_init() {
   // Initialize kernel heap
   kheap_init();
   println("Kernel heap: [ok]");
+
+  disk_search_init();
+  println("Initialize disks: [ok]");
 
   // Initialize the interrupt descriptor table
   idt_init();
@@ -47,10 +51,11 @@ void kernel_init() {
 void kernel_main() {
   kernel_init();
 
-  char *buf = kmalloc(512);
-  disk_read_sector(0, 1, buf);
-  for (int i = 0; i < 512; i++)
-    buf[i] = (unsigned char)(buf[i]);
+  struct disk *idisk = disk_get(CELLOS_DISK_TYPE_REAL);
+
+  uint32_t buf_size = 1;
+  char *buf = kmalloc(buf_size * CELLOS_SECTOR_SIZE);
+  disk_read_block(idisk, 0, buf_size, &buf);
 
   println(buf);
   kfree(buf);
